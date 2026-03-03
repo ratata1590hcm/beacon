@@ -1,0 +1,52 @@
+services:
+  base:
+    image: ledanghuy/ubuntu2404:base
+    privileged: true
+    restart: always
+    ports:
+      - 8089:8089
+    build:
+      context: build/ubuntu-2404
+      dockerfile: Dockerfile.base
+    # volumes:
+    #   - /etc/cntlm.conf:/etc/cntlm.conf
+
+  devcontainer:
+    image: ledanghuy/ubuntu2404:devcontainer
+    privileged: true
+    restart: always
+    ports:
+      - 8089:8089
+    build:
+      context: build/ubuntu-2404
+      dockerfile: Dockerfile.devcontainer
+    # volumes:
+    #   - /etc/cntlm.conf:/etc/cntlm.conf
+
+  webtop-ubuntu-base:
+    image: ledanghuy/ubuntu2404:webtop-ubuntu-base
+    privileged: true
+    restart: always
+    ports:
+      - 8089:8089
+      - 3000:3000
+      - 3001:3001
+    build:
+      context: build/linuxserver
+      dockerfile: Dockerfile.webtop-ubuntu-base
+    # volumes:
+    #   - /etc/cntlm.conf:/etc/cntlm.conf
+
+  webtop-ubuntu-xfce:
+    image: ledanghuy/ubuntu2404:webtop-ubuntu-xfce
+    privileged: true
+    restart: always
+    ports:
+      - 8089:8089
+      - 3000:3000
+      - 3001:3001
+    build:
+      context: build/linuxserver
+      dockerfile: Dockerfile.webtop-ubuntu-xfce
+    # volumes:
+    #   - /etc/cntlm.conf:/etc/cntlm.conf

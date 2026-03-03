@@ -1,0 +1,60 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $0 [OPTIONS] USERNAME PASSWORD [REGISTRY]"
+    echo ""
+    echo "This script adds/updates Docker registry credentials directly into"
+    echo "~/.docker/config.json (plain base64 auth) without calling 'docker login'."
+    echo ""
+    echo "Positional Arguments:"
+    echo "  USERNAME    Docker registry username (or email for Docker Hub)"
+    echo "  PASSWORD    Password or access token"
+    echo "  REGISTRY    Registry host (optional, defaults to Docker Hub)"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help  Display this help message and exit."
+    echo ""
+    echo "Example:"
+    echo "  $0 huy mypassword                     # → uses Docker Hub"
+    echo "  $0 admin secret123 myregistry.com:5000"
+    echo "  $0 huy \$GHCR_TOKEN ghcr.io"
+    exit 0
+}
+
+# Check for help option
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Ensure 2 or 3 positional arguments
+if [ $# -lt 2 ] || [ $# -gt 3 ]; then
+    echo "Error: 2 or 3 arguments are required." >&2
+    usage
+fi
+
+DOCKER_LOGIN_USERNAME=$1
+DOCKER_LOGIN_PASSWORD=$2
+DOCKER_LOGIN_REGISTRY=${3:-https://index.docker.io/v1/}
+
+# ----------------------------------------------------------------------
+# Main logic
+# ----------------------------------------------------------------------
+
+config_file="${DOCKER_CONFIG:-$HOME/.docker}/config.json"
+
+# Create directory and empty config if it doesn't exist
+mkdir -p "$(dirname "$config_file")"
+[ -f "$config_file" ] || echo '{}' > "$config_file"
+
+# Build base64 auth (portable, no extra newlines)
+auth_string=$(printf '%s:%s' "$DOCKER_LOGIN_USERNAME" "$DOCKER_LOGIN_PASSWORD" | base64 | tr -d '\r\n')
+
+# One clean jq pass: remove credsStore/credHelpers + add/update auth
+jq --arg reg "$DOCKER_LOGIN_REGISTRY" \
+   --arg auth "$auth_string" \
+   'del(.credsStore, .credHelpers) | .auths //= {} | .auths[$reg] = {auth: $auth}' \
+   "$config_file" > "${config_file}.tmp" && mv "${config_file}.tmp" "$config_file"
+
+echo "Successfully added/updated credentials for $DOCKER_LOGIN_REGISTRY"
+echo "→ config file: $config_file"
+echo "→ You can now run: docker pull ${DOCKER_LOGIN_REGISTRY}/some/image"

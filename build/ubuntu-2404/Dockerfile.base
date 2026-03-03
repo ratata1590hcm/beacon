@@ -1,0 +1,32 @@
+FROM ubuntu:24.04
+WORKDIR /workspace
+ENV SETUP_USER=ubuntu
+USER root
+RUN apt-get update && apt-get -y dist-upgrade && apt-get -y autoclean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/
+COPY core .
+RUN bash setup.sh
+COPY docker .
+RUN bash setup.sh
+COPY xfce .
+RUN bash setup.sh
+COPY cloud-tools .
+RUN bash setup.sh
+
+USER ubuntu
+COPY code-server .
+RUN bash setup.sh
+
+USER root
+COPY security-patch/base .
+RUN bash setup.sh
+COPY cntlm .
+RUN bash setup.sh
+USER ubuntu
+ENTRYPOINT [ "tini", "--" ]
+CMD [ "code-server" ]
+ENV HTTP_PROXY=http://172.16.0.1:3128 \
+    HTTPS_PROXY=http://172.16.0.1:3128 \
+    http_proxy=http://172.16.0.1:3128 \
+    https_proxy=http://172.16.0.1:3128 \
+    no_proxy=localhost,127.0.0.1,172.16.0.1/16,172.15.0.1/16,host.docker.internal \
+    NO_PROXY=localhost,127.0.0.1,172.16.0.1/16,172.15.0.1/16,host.docker.internal

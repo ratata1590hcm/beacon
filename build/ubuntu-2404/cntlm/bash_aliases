@@ -1,0 +1,7 @@
+
+export HTTP_PROXY=http://172.16.0.1:3128
+export HTTPS_PROXY=http://172.16.0.1:3128
+export http_proxy=http://172.16.0.1:3128
+export https_proxy=http://172.16.0.1:3128
+export no_proxy=localhost,127.0.0.1,172.16.0.1/16,172.15.0.1/16,host.docker.internal
+export NO_PROXY=localhost,127.0.0.1,172.16.0.1/16,172.15.0.1/16,host.docker.internal

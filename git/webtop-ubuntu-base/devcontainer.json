@@ -1,0 +1,18 @@
+{
+    "image": "ledanghuy/ubuntu2404:webtop-ubuntu-base",
+    "remoteUser": "abc",
+    "runArgs": [
+        "--entrypoint=/init",
+        "--privileged",
+        "--network=harness_default",
+        "--restart=always",
+        "--shm-size=1gb"
+    ],
+    "postCreateCommand":"sudo update-ca-certificates",
+    "mounts":[
+        "source=/etc/cntlm.conf.harness,target=/etc/cntlm.conf,type=bind",
+        "source=/workspace/certs/host.crt,target=/config/.local/share/code-server/localhost.crt,type=bind",
+        "source=/workspace/certs/host.key,target=/config/.local/share/code-server/localhost.key,type=bind",
+        "source=/usr/local/share/ca-certificates,target=/usr/local/share/ca-certificates,type=bind"
+    ]
+}

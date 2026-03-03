@@ -1,0 +1,29 @@
+version: 1
+kind: pipeline
+spec:
+  stages:
+    - name: build
+      type: ci
+      spec:
+        envs:
+          HOME: /gitness
+        steps:
+          - name: build
+            type: script
+            spec:
+              image: actions/docker:latest
+              pull: if-not-exists
+              network_mode: host
+              run: |
+                docker_login "${{ secrets.get("dockerhub_username") }}" "${{ secrets.get("dockerhub_token") }}"
+                docker compose pull -q
+                docker compose build
+                docker compose push -q
+              mount:
+                - name: host-sock
+                  path: /var/run/docker.sock
+        volumes:
+          - name: host-sock
+            type: host
+            spec:
+              path: /var/run/docker.sock

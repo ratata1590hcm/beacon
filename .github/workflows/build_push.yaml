@@ -1,0 +1,99 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    tags::
+      - build
+
+jobs:
+  build-base:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build base image
+        run: docker compose build base
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push base image
+        run: docker compose push -q base
+
+      - name: Scan base image for critical vulnerabilities
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock  aquasec/trivy:0.52.2 image --no-progress --severity CRITICAL \
+          ledanghuy/ubuntu2404:base
+
+  build-devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build devcontainer image
+        run: docker compose build devcontainer
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push devcontainer image
+        run: docker compose push -q devcontainer
+
+      - name: Scan base image for critical vulnerabilities
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock  aquasec/trivy:0.52.2 image --no-progress --severity CRITICAL \
+          ledanghuy/ubuntu2404:devcontainer
+
+  build-webtop-ubuntu-base:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build webtop-ubuntu-base image
+        run: docker compose build webtop-ubuntu-base
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push webtop-ubuntu-base image
+        run: docker compose push -q webtop-ubuntu-base
+
+      - name: Scan base image for critical vulnerabilities
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock  aquasec/trivy:0.52.2 image --no-progress --severity CRITICAL \
+          ledanghuy/ubuntu2404:webtop-ubuntu-base
+
+  build-webtop-ubuntu-xfce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build webtop-ubuntu-xfce image
+        run: docker compose build webtop-ubuntu-xfce
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push webtop-ubuntu-xfce image
+        run: docker compose push -q webtop-ubuntu-xfce
+
+      - name: Scan base image for critical vulnerabilities
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock  aquasec/trivy:0.52.2 image --no-progress --severity CRITICAL \
+          ledanghuy/ubuntu2404:webtop-ubuntu-xfce

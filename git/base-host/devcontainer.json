@@ -1,0 +1,18 @@
+{
+    "image": "ledanghuy/ubuntu2404:base",
+    "runArgs": [
+        "--privileged",
+        "--net=host",
+        "--pid=host",
+        "--hostname=dev-space",
+        "--restart=always"
+    ],
+    "postCreateCommand": "sudo update-ca-certificates",
+    "mounts": [
+        "source=/workspace,target=/workspace,type=bind",
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+        "source=/workspace/certs/host.crt,target=/home/ubuntu/.local/share/code-server/localhost.crt,type=bind",
+        "source=/workspace/certs/host.key,target=/home/ubuntu/.local/share/code-server/localhost.key,type=bind",
+        "source=/usr/local/share/ca-certificates,target=/usr/local/share/ca-certificates,type=bind"
+    ]
+}

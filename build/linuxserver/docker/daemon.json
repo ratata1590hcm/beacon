@@ -1,0 +1,10 @@
+{
+    "bip": "172.15.0.1/16",
+    "fixed-cidr": "172.15.0.1/16",
+    "storage-driver": "vfs",
+    "insecure-registries": [
+        "localhost:5000",
+        "host.docker.internal:3000",
+        "host.docker.internal:5000"
+    ]
+}

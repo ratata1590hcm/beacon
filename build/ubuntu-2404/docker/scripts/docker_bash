@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# docker_bash.sh - Inject static binaries & open bash (running container only)
+
+[ $# -ne 1 ] && { echo "Usage: $0 <container>"; exit 1; }
+
+CONTAINER="$1"
+
+for bin in bash-static busybox-static handy-sshd; do
+    [[ -x "/usr/local/bin/$bin" ]] || { echo "Missing /usr/local/bin/$bin"; exit 1; }
+done
+
+docker ps -q -f name="^${CONTAINER}$" -f name="^${CONTAINER}$" -f id="${CONTAINER:0:12}" >/dev/null 2>&1 ||
+    { echo "Container '$CONTAINER' not running"; exit 1; }
+
+docker cp /usr/local/bin/bash-static    "$CONTAINER:/bin/bash"
+docker cp /usr/local/bin/bash-static    "$CONTAINER:/bin/sh"
+docker cp /usr/local/bin/busybox-static "$CONTAINER:/bin/busybox"
+docker cp /usr/local/bin/handy-sshd     "$CONTAINER:/bin/sshd"
+
+exec docker exec -it "$CONTAINER" /bin/bash

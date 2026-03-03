@@ -1,0 +1,38 @@
+version: 1
+kind: pipeline
+spec:
+  stages:
+    - name: gh pull push
+      type: ci
+      spec:
+        envs:
+          HOME: /gitness
+        steps:
+          - name: login dockerhub
+            type: script
+            spec:
+              image: actions/docker:latest
+              pull: if-not-exists
+              run: docker_login "${{ secrets.get("dockerhub_username") }}" "${{ secrets.get("dockerhub_token") }}" 
+          - name: pull
+            type: script
+            spec:
+              image: actions/docker:latest
+              pull: if-not-exists
+              run: |
+                docker compose pull
+                docker compose -f docker-compose.yaml.sync build
+          - name: login local
+            type: script
+            spec:
+              image: actions/docker:latest
+              pull: if-not-exists
+              run: docker_login "${{ secrets.get("docker_username") }}" "${{ secrets.get("docker_token") }}" host.docker.internal:3000 
+          - name: push
+            type: script
+            spec:
+              image: actions/docker:latest
+              pull: if-not-exists
+              run: |
+                mv docker-compose.yaml.sync docker-compose.yaml
+                docker compose push -q 

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Get container_id from the first command-line argument
+container_id="$1"
+
+# Check if container_id is provided
+if [ -z "$container_id" ]; then
+    echo "Error: Container ID must be provided as the first argument."
+    exit 1
+fi
+
+docker cp /usr/local/bin/bash-static    "$container_id:/bin/bash"
+docker cp /usr/local/bin/bash-static    "$container_id:/bin/sh"
+docker cp /usr/local/bin/busybox-static "$container_id:/bin/busybox"
+docker cp /usr/local/bin/handy-sshd     "$container_id:/bin/sshd"
+
+docker exec "$container_id" /bin/busybox tar cz -C / . > "${container_id}.tar.gz"
+
+# Optional: Confirm completion
+echo "Backup completed: ${container_id}.tar.gz"

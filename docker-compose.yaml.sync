@@ -1,0 +1,24 @@
+services:
+  base:
+    image: host.docker.internal:3000/harness-base/beacon/ubuntu2404:base
+    build:
+      context: sync
+      dockerfile: Dockerfile.base
+
+  devcontainer:
+    image: host.docker.internal:3000/harness-base/beacon/ubuntu2404:devcontainer
+    build:
+      context: sync
+      dockerfile: Dockerfile.devcontainer
+
+  webtop-ubuntu-base:
+    image: host.docker.internal:3000/harness-base/beacon/ubuntu2404:webtop-ubuntu-base
+    build:
+      context: sync
+      dockerfile: Dockerfile.webtop-ubuntu-base
+
+  webtop-ubuntu-xfce:
+    image: host.docker.internal:3000/harness-base/beacon/ubuntu2404:webtop-ubuntu-xfce
+    build:
+      context: sync
+      dockerfile: Dockerfile.webtop-ubuntu-xfce

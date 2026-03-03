@@ -1,0 +1,45 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $0 [OPTIONS] CONTAINERID FOLDER ENTRYPOINT"
+    echo ""
+    echo "This script copies static binaries into an existing running Docker container,"
+    echo "creates the parent directory for the application folder if needed, copies the application folder,"
+    echo "and executes the entrypoint inside the container."
+    echo ""
+    echo "Positional Arguments:"
+    echo "  CONTAINERID  The ID of the existing running Docker container to exec into."
+    echo "  FOLDER       The local folder to copy into the container."
+    echo "  ENTRYPOINT   The entrypoint script or command to execute inside the container."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help  Display this help message and exit."
+    echo ""
+    echo "Example:"
+    echo "  $0 abc123def456 /path/to/app app.sh"
+    exit 0
+}
+
+# Check for help option
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Ensure exactly 3 positional arguments are provided
+if [ $# -ne 3 ]; then
+    usage
+fi
+
+DOCKER_EXEC_CONTAINERID=$1
+DOCKER_EXEC_APP_FOLDER=$2
+DOCKER_EXEC_APP_ENTRYPOINT=$3
+
+PARENT_DOCKER_EXEC_APP_FOLDER=$(realpath -m "$DOCKER_EXEC_APP_FOLDER/..")
+DOCKER_EXEC_APP_FOLDER=$(realpath -m "$DOCKER_EXEC_APP_FOLDER")
+docker cp /usr/local/bin/bash-static $DOCKER_EXEC_CONTAINERID:/bin/sh
+docker cp /usr/local/bin/bash-static $DOCKER_EXEC_CONTAINERID:/bin/bash
+docker cp /usr/local/bin/busybox-static $DOCKER_EXEC_CONTAINERID:/bin/busybox
+docker cp /usr/local/bin/handy-sshd $DOCKER_EXEC_CONTAINERID:/bin/sshd
+docker exec --user 0: $DOCKER_EXEC_CONTAINERID /bin/bash -c "busybox mkdir -p $PARENT_DOCKER_EXEC_APP_FOLDER"
+docker cp $DOCKER_EXEC_APP_FOLDER $DOCKER_EXEC_CONTAINERID:$PARENT_DOCKER_EXEC_APP_FOLDER > /dev/null
+docker exec --user 0: $DOCKER_EXEC_CONTAINERID /bin/bash -c "cd $DOCKER_EXEC_APP_FOLDER && bash $DOCKER_EXEC_APP_ENTRYPOINT"

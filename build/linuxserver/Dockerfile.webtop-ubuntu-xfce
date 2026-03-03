@@ -1,0 +1,57 @@
+FROM lscr.io/linuxserver/webtop:ubuntu-xfce AS temp
+WORKDIR /workspace
+ENV SETUP_USER=abc
+USER root
+COPY core .
+RUN bash setup.sh
+COPY cleanup-webtop .
+RUN bash setup.sh
+RUN apt-get update && apt-get -y dist-upgrade && apt-get -y autoclean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/
+COPY xfce-adjust .
+RUN bash setup.sh
+COPY docker .
+RUN bash setup.sh
+COPY cloud-tools .
+RUN bash setup.sh
+
+USER abc
+COPY code-server .
+RUN bash setup.sh
+
+USER root
+COPY security-patch/webtop .
+RUN bash setup.sh
+COPY cntlm .
+RUN bash setup.sh
+ENV HTTP_PROXY=http://172.16.0.1:3128 \
+    HTTPS_PROXY=http://172.16.0.1:3128 \
+    http_proxy=http://172.16.0.1:3128 \
+    https_proxy=http://172.16.0.1:3128 \
+    no_proxy=localhost,127.0.0.1,172.16.0.1/16,172.15.0.1/16,host.docker.internal \
+    NO_PROXY=localhost,127.0.0.1,172.16.0.1/16,172.15.0.1/16,host.docker.internal
+
+# FROM scratch
+# COPY --from=temp / /
+# WORKDIR /
+# ENV \
+#     CUSTOM_PORT=3003 \
+#     PATH="/lsiopy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+#     HOME="/config" \
+#     LANGUAGE="en_US.UTF-8" \
+#     LANG="en_US.UTF-8" \
+#     TERM="xterm" \
+#     S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0 \
+#     S6_VERBOSITY=1 \
+#     S6_STAGE2_HOOK="/docker-mods" \
+#     VIRTUAL_ENV="/lsiopy" \
+#     DISPLAY=":1" \
+#     PERL5LIB="/usr/local/bin" \
+#     START_DOCKER="true" \
+#     PULSE_RUNTIME_PATH="/defaults" \
+#     SELKIES_INTERPOSER="/usr/lib/selkies_joystick_interposer.so" \
+#     NVIDIA_DRIVER_CAPABILITIES="all" \
+#     DISABLE_ZINK="false" \
+#     DISABLE_DRI3="false" \
+#     TITLE="Ubuntu XFCE" \
+#     LSIO_FIRST_PARTY="true"
+# ENTRYPOINT [ "/init" ]

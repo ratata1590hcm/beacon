@@ -1,0 +1,7 @@
+
+HTTP_PROXY=http://localhost:3128
+HTTPS_PROXY=http://localhost:3128
+http_proxy=http://localhost:3128
+https_proxy=http://localhost:3128
+no_proxy=localhost,127.0.0.1,172.15.0.1/16,host.docker.internal
+NO_PROXY=localhost,127.0.0.1,172.15.0.1/16,host.docker.internal

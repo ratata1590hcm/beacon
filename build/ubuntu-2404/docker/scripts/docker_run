@@ -1,0 +1,57 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $0 [OPTIONS] IMAGE FOLDER ENTRYPOINT [DOCKER_OPTS...]"
+    echo ""
+    echo "This script creates a Docker container with the specified image, copies static binaries,"
+    echo "starts the container, sets up an SSH daemon, copies the application folder, and executes the entrypoint."
+    echo ""
+    echo "Positional Arguments:"
+    echo "  IMAGE       The Docker image to run."
+    echo "  FOLDER      The local folder to copy into the container."
+    echo "  ENTRYPOINT  The entrypoint script or command to execute inside the container."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help  Display this help message and exit."
+    echo ""
+    echo "Any additional arguments after ENTRYPOINT are passed as options to 'docker create'."
+    echo ""
+    echo "Example:"
+    echo "  $0 my-image /path/to/app app.sh -p 8080:80"
+    exit 0
+}
+
+# Check for help option
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Ensure at least 3 positional arguments are provided
+if [ $# -lt 3 ]; then
+    usage
+fi
+
+DOCKER_RUN_APP_IMAGE=$1
+DOCKER_RUN_APP_FOLDER=$2
+DOCKER_RUN_APP_ENTRYPOINT=$3
+shift 3
+DOCKER_RUN_APP_OPT=("$@")
+trap_cleanup() {
+    EXIT_CODE=$?
+    (docker cp $container_id:$DOCKER_RUN_APP_FOLDER $PARENT_DOCKER_RUN_APP_FOLDER > /dev/null)
+    (docker rm -f $container_id > /dev/null)
+}
+trap trap_cleanup EXIT
+PARENT_DOCKER_RUN_APP_FOLDER=$(realpath -m "$DOCKER_RUN_APP_FOLDER/..")
+DOCKER_RUN_APP_FOLDER=$(realpath -m "$DOCKER_RUN_APP_FOLDER")
+container_id=$(docker create --rm --entrypoint=/bin/bash --user 0: \
+  ${DOCKER_RUN_APP_OPT[@]} $DOCKER_RUN_APP_IMAGE -c "sshd --user root: --shell /bin/bash")
+docker cp /usr/local/bin/bash-static $container_id:/bin/sh
+docker cp /usr/local/bin/bash-static $container_id:/bin/bash
+docker cp /usr/local/bin/busybox-static $container_id:/bin/busybox
+docker cp /usr/local/bin/handy-sshd $container_id:/bin/sshd
+docker start $container_id
+# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $container_id
+docker exec --user 0: $container_id /bin/bash -c "busybox mkdir -p $PARENT_DOCKER_RUN_APP_FOLDER"
+docker cp $DOCKER_RUN_APP_FOLDER $container_id:$PARENT_DOCKER_RUN_APP_FOLDER > /dev/null
+docker exec --user 0: $container_id /bin/bash -c "cd $DOCKER_RUN_APP_FOLDER && bash $DOCKER_RUN_APP_ENTRYPOINT"

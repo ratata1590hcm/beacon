@@ -1,0 +1,6 @@
+
+alias dive="docker run -ti --rm  -v /var/run/docker.sock:/var/run/docker.sock docker.io/wagoodman/dive"
+alias trivy="docker run --pid=host --privileged --rm -v /:/hostdir -v /root:/root -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) aquasec/trivy:latest"
+alias trivy_hostscan="trivy fs --no-progress -q --severity HIGH,CRITICAL --skip-dirs /hostdir/workspace --skip-dirs /hostdir/rofs --skip-dirs /hostdir/var/lib/apt/lists /hostdir > hostdir_trivy_report.txt"
+alias grype="docker run --pid=host --privileged --rm -v /:/hostdir -v /root:/root -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) anchore/grype:latest"
+alias grype_hostscan="grype -q --exclude './workspace/**' --exclude './rofs/**' dir:/hostdir > hostdir_grype_report.txt"
