@@ -1,5 +1,5 @@
 {
-    "image": "ledanghuy/ubuntu2404:base",
+    "image": "localhost:5000/ledanghuy/ubuntu2404:base",
     "runArgs": [
         "--privileged",
         "--net=host",
