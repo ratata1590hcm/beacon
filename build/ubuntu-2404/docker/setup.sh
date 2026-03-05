@@ -24,6 +24,9 @@ cp daemon.json /etc/docker/daemon.json
 cat bash_aliases >> /home/$SETUP_USER/.bash_aliases
 chmod 777 /home/$SETUP_USER/.bash_aliases
 
+# patch inid permission
+sed -i 's/log_end_msg $?/log_end_msg $? \&\& sleep 2 \&\& chmod 777 \/var\/run\/docker.sock/' /etc/initd/docker
+
 # handy-sshd
 wget -O /tmp/handdy.tar.gz https://github.com/nwtgck/handy-sshd/releases/download/v0.4.3/handy-sshd-0.4.3-linux-amd64.tar.gz
 tar -xzf /tmp/handdy.tar.gz -C /tmp
