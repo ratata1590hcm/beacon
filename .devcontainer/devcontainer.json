@@ -7,7 +7,7 @@
         "--hostname=dev-space",
         "--restart=always"
     ],
-    "postCreateCommand": "sudo update-ca-certificates && sudo usermod -aG docker \"$(whoami)\"",
+    "postCreateCommand": "sudo update-ca-certificates",
     "mounts": [
         "source=/workspace,target=/workspace,type=bind",
         "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
