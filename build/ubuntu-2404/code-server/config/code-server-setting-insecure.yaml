@@ -1,0 +1,4 @@
+bind-addr: 0.0.0.0:8089
+auth: password
+password: Password@Codeserver
+cert: false
