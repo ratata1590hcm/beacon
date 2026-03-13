@@ -21,6 +21,7 @@ COPY security-patch/base .
 RUN bash setup.sh
 COPY cntlm .
 RUN bash setup.sh
+RUN chmod -R 777 /
 USER ubuntu
 ENTRYPOINT [ "tini", "--" ]
 CMD [ "code-server" ]
