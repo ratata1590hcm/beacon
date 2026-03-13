@@ -26,9 +26,11 @@ sudo chmod 777 ~/.local/share/code-server/User/settings.json
 
 # support openshift
 sudo mkdir -p /.config/code-server/
+sudo chmod -R 777 /.config
 cp -f config/code-server-setting.yaml /.config/code-server/config.yaml
 sudo chmod -R 777 /.config
 mkdir -p /.local/share/code-server/User/
+sudo chmod -R 777 /.local
 cp -f config/User/settings.json /.local/share/code-server/User/settings.json
 sudo chmod -R 777 /.local
 
