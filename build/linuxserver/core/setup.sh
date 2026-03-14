@@ -3,7 +3,7 @@ set -eux
 export DEBIAN_FRONTEND=noninteractive
 cp -rf apt-99disable-ssl-verify.conf /etc/apt/apt.conf.d/99disable-ssl-verify.conf
 apt-get update
-apt-get install -y tini nmap ncdu net-tools wget sudo htop nano btop nvtop tmux proot
+apt-get install -y tini nmap ncdu net-tools wget sudo htop nano btop nvtop tmux proot rsync
 
 usermod -aG sudo $SETUP_USER
 echo "$SETUP_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$SETUP_USER
