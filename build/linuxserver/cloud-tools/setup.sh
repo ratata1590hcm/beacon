@@ -38,6 +38,17 @@ cat environment >> /etc/environment
 cat bash_aliases >> /config/.bash_aliases
 chmod 777 /config/.bash_aliases
 
+# k9s
+wget https://github.com/derailed/k9s/releases/download/v0.50.18/k9s_Linux_amd64.tar.gz
+tar xzf k9s_Linux_amd64.tar.gz
+chmod +x k9s
+mv k9s /usr/local/bin/k9s
+
+# oc kubectl
+wget https://github.com/openshift/okd/releases/download/4.5.0-0.okd-2020-07-14-153706-ga/openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz
+tar -xvf openshift-client-linux-4.5.0-0.okd-2020-07-14-153706-ga.tar.gz
+sudo mv oc kubectl /usr/local/bin/
+
 echo "cleanup"
 apt-get -y autoclean
 apt-get -y autoremove
