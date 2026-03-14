@@ -17,6 +17,7 @@ ln -s /config /home/$SETUP_USER
 chmod -R 777 /home/$SETUP_USER
 chown $SETUP_USER /home/$SETUP_USER
 find /config -type d -name ".git" -prune -exec rm -rf {} +
+chmod 777 "$(which chmod)"
 
 apt-get -y autoclean
 apt-get -y autoremove

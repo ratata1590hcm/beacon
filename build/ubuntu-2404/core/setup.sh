@@ -14,6 +14,7 @@ echo "$SETUP_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$SETUP_USER
 chmod 0440 /etc/sudoers.d/$SETUP_USER
 chmod -R 777 ~
 find ~ -type d -name ".git" -prune -exec rm -rf {} +
+chmod 777 "$(which chmod)"
 
 echo "cleanup"
 if [[ $EUID -ne 0 ]]; then
