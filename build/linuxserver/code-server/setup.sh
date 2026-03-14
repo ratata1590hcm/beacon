@@ -24,6 +24,16 @@ mkdir -p ~/.local/share/code-server/User/
 cp -f config/User/settings.json ~/.local/share/code-server/User/settings.json
 sudo chmod 777 ~/.local/share/code-server/User/settings.json
 
+# support openshift
+sudo mkdir -p /.config/code-server/
+sudo chmod -R 777 /.config
+sudo cp -f config/code-server-setting-insecure.yaml /.config/code-server/config.yaml
+sudo chmod -R 777 /.config
+sudo mkdir -p /.local/share/code-server/User/
+sudo chmod -R 777 /.local
+sudo cp -f config/User/settings.json /.local/share/code-server/User/settings.json
+sudo chmod -R 777 /.local
+
 echo "patch dpkg to not install when exist"
 if [ ! -f /bin/dpkg.real ]; then
     echo "Creating backup and installing wrapper in /bin ..."
