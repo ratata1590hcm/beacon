@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 WORKDIR /workspace
+RUN chmod -R 777 /workspace
 ENV SETUP_USER=vscode
 USER root
 RUN apt-get update && apt-get -y dist-upgrade && apt-get -y autoclean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/
@@ -22,6 +23,8 @@ RUN bash setup.sh
 COPY cntlm .
 RUN bash setup.sh
 USER vscode
+RUN cp -rf /.local /workspace
+RUN cp -rf /.config /workspace
 ENTRYPOINT [ "tini", "--" ]
 CMD [ "code-server" ]
 ENV HTTP_PROXY=http://172.16.0.1:3128 \

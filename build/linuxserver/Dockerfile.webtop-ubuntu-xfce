@@ -1,5 +1,6 @@
 FROM lscr.io/linuxserver/webtop:ubuntu-xfce AS temp
 WORKDIR /workspace
+RUN chmod -R 777 /workspace
 ENV SETUP_USER=abc
 USER root
 COPY core .
@@ -23,6 +24,8 @@ COPY security-patch/webtop .
 RUN bash setup.sh
 COPY cntlm .
 RUN bash setup.sh
+RUN cp -rf /.local /workspace
+RUN cp -rf /.config /workspace
 ENV HTTP_PROXY=http://172.16.0.1:3128 \
     HTTPS_PROXY=http://172.16.0.1:3128 \
     http_proxy=http://172.16.0.1:3128 \
